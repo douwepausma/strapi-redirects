@@ -1,0 +1,23 @@
+{
+  "loading": "Loading...",
+  "plugin.name": "Redirects",
+  "overview.table.headers.source": "Source",
+  "overview.table.headers.destination": "Destination",
+  "overview.table.headers.permanent": "Permanent",
+  "overview.table.headers.actions": "Actions",
+  "overview.table.body.empty.content": "You don't have any redirects yet...",
+  "overview.table.body.empty.button": "Create your first Redirect",
+  "pages.homePage.header.button": "Add a Redirect",
+  "pages.homePage.header.subtitle": "(WIP) Show number of redirects here",
+  "pages.homePage.table.edit": "Edit",
+  "pages.homePage.table.delete": "Delete",
+  "form.title.create": "Add a Redirect",
+  "form.title.edit": "Edit a Redirect",
+  "form.field.source": "Source",
+  "form.field.destination": "Destination",
+  "form.field.permanent": "Permanent",
+  "form.cancel": "Cancel",
+  "form.confirm": "Save",
+  "form.notification.updated": "Redirect updated successfully!",
+  "form.notification.created": "Redirect created successfully!"
+}
