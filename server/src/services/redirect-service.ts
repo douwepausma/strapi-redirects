@@ -43,14 +43,21 @@ export default factories.createCoreService(
     async findAll(params: FindAllParams = {}): Promise<FindAllResponse> {
       const { sort = 'id:desc', filters = {}, pagination = {} } = params;
 
-      const page = pagination.page ? parseInt(pagination.page.toString(), 10) : 1;
-      const pageSize = pagination.pageSize ? parseInt(pagination.pageSize.toString(), 10) : 10;
+      const page = pagination.page ? pagination.page : 1;
+      const pageSize = pagination.pageSize ? pagination.pageSize : 10;
+
+      let start = 0;
+      const limit = pageSize || 10; // Default limit
+      if (page) {
+        start = (page - 1) * limit;
+      }
 
       // Fetch redirects with filters, sort, and pagination
       const redirects: any = await strapi.documents('plugin::strapi-redirects.redirect').findMany({
         filters, // Apply the search filters
         sort, // Apply the sorting order
-        pagination: { page, pageSize }, // Pagination
+        start,
+        limit,
       });
 
       // Fetch total count of redirects

@@ -1,4 +1,3 @@
-// hooks/useSearchQuery.ts
 import { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -19,6 +18,7 @@ const useSearchQuery = (): SearchQuery => {
     const searchParams = new URLSearchParams(search);
     searchParams.set('page', newPage.toString());
 
+    // Persist existing parameters (like pageSize) and navigate
     navigate({
       pathname,
       search: '?' + searchParams.toString(),
@@ -30,6 +30,7 @@ const useSearchQuery = (): SearchQuery => {
     searchParams.set('pageSize', newPageSize.toString());
     searchParams.set('page', '1'); // Reset to first page when page size changes
 
+    // Persist other existing parameters and navigate
     navigate({
       pathname,
       search: '?' + searchParams.toString(),

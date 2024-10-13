@@ -15,6 +15,7 @@
   "pages.homePage.search.clearLabel": "Clear redirects",
   "pages.homePage.search.placeholder": "Search redirects...",
   "pages.homePage.search.ariaLabel": "Searching redirects",
+  "pages.homePage.entries.title": "Entries per page",
   "form.title.create": "Add a Redirect",
   "form.title.edit": "Edit a Redirect",
   "form.field.source": "Source",

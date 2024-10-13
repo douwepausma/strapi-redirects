@@ -111,6 +111,7 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
    * Delete a redirect
    */
   async delete(ctx) {
+    console.log('delete', ctx.params);
     const { documentId } = ctx.params;
     try {
       const redirect = await strapi

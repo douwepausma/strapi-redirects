@@ -1,7 +1,5 @@
-// components/Pagination.tsx
 import React from 'react';
 import { useIntl } from 'react-intl';
-import { stringify } from 'qs';
 import {
   Dots,
   NextLink,
@@ -13,10 +11,14 @@ import {
 interface PaginationProps {
   activePage: number;
   pageCount: number;
-  query: Record<string, any>;
+  handlePageChange: (newPage: number) => void;
 }
 
-const Pagination: React.FC<PaginationProps> = ({ activePage, pageCount, query }) => {
+const Pagination: React.FC<PaginationProps> = ({
+  activePage,
+  pageCount,
+  handlePageChange,
+}) => {
   const { formatMessage } = useIntl();
 
   const range = (start: number, end: number) => {
@@ -28,7 +30,6 @@ const Pagination: React.FC<PaginationProps> = ({ activePage, pageCount, query })
   const endPages = range(Math.max(pageCount - 1, 2), pageCount);
 
   const siblingsStart = Math.max(Math.min(activePage - 1, pageCount - 2), 2);
-
   const siblingsEnd = Math.min(Math.max(activePage + 1, 2), pageCount - 1);
 
   const items = [
@@ -42,9 +43,7 @@ const Pagination: React.FC<PaginationProps> = ({ activePage, pageCount, query })
   return (
     <PaginationImpl activePage={activePage} pageCount={pageCount}>
       <PreviousLink
-        to={{
-          search: stringify({ ...query, page: activePage > 1 ? activePage - 1 : 1 }),
-        }}
+        onClick={() => handlePageChange(activePage > 1 ? activePage - 1 : 1)}
         disabled={activePage === 1}
       >
         {formatMessage({
@@ -52,12 +51,13 @@ const Pagination: React.FC<PaginationProps> = ({ activePage, pageCount, query })
           defaultMessage: 'Go to previous page',
         })}
       </PreviousLink>
+
       {items.map((item, index) => {
         if (typeof item === 'number') {
           return (
             <PageLink
               key={index}
-              to={{ search: stringify({ ...query, page: item }) }}
+              onClick={() => handlePageChange(item)}
               number={item}
               isActive={item === activePage}
             >
@@ -74,13 +74,9 @@ const Pagination: React.FC<PaginationProps> = ({ activePage, pageCount, query })
 
         return <Dots key={index} />;
       })}
+
       <NextLink
-        to={{
-          search: stringify({
-            ...query,
-            page: activePage < pageCount ? activePage + 1 : pageCount,
-          }),
-        }}
+        onClick={() => handlePageChange(activePage < pageCount ? activePage + 1 : pageCount)}
         disabled={activePage === pageCount}
       >
         {formatMessage({

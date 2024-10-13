@@ -19,7 +19,7 @@ export interface RedirectModalProps {
   visible: boolean;
   selectedRedirect?: RedirectType | null;
   handleCloseModal: () => void;
-  onRedirectSaved: () => void; // Trigger refetch on save
+  onRedirectSaved: () => void;
 }
 
 export interface RedirectInput {
@@ -63,6 +63,6 @@ export interface FindAllResponse {
 export interface RedirectTableHeader extends Table.Header<any, any> {
   name: string;
   label: string;
-  key: string;
   isSortable: boolean;
+  key: string;
 }

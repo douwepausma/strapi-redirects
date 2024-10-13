@@ -33,7 +33,7 @@ export default [
       },
       {
         method: "DELETE",
-        path: "/:id",
+        path: "/:documentId",
         handler: "redirectController.delete",
         config: { 
             policies: ["admin::isAuthenticatedAdmin"]

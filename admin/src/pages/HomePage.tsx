@@ -20,6 +20,9 @@ import {
   Loader,
   SearchForm,
   Searchbar,
+  Field,
+  SingleSelect,
+  SingleSelectOption,
 } from '@strapi/design-system';
 import { Pencil, Plus, Trash, ChevronUp, ChevronDown } from '@strapi/icons';
 
@@ -43,18 +46,19 @@ const HomePage = () => {
 
   const [isFetching, setIsFetching] = useState(false);
   const [redirects, setRedirects] = useState<RedirectType[]>([]);
+  const [selectedRedirect, setSelectedRedirect] = useState<RedirectType | null>(null);
+  const [sortBy, setSortBy] = useState<string>('source');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
   const [pagination, setPagination] = useState<PaginationType>({
     page: 1,
     pageSize: 10,
     pageCount: 1,
     total: 0,
   });
-  const [selectedRedirect, setSelectedRedirect] = useState<RedirectType | null>(null);
-  const [sortBy, setSortBy] = useState<string>('permanent'); // Default sort field
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); // Default sort order
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
+  const pageSizes = [5, 10, 20, 50];
 
   // Modal state management
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -64,12 +68,10 @@ const HomePage = () => {
 
   const headers = tableHeaders(formatMessage);
 
-  // Function to open the modal
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
 
-  // Function to close the modal and refetch redirects
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedRedirect(null);
@@ -81,10 +83,33 @@ const HomePage = () => {
     setIsModalOpen(true);
   };
 
+  const handleSort = (field: string) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(field);
+      setSortOrder('asc');
+    }
+    setNewPage(1);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setNewPage(newPage);
+  };
+
+  const handlePageSizeChange = (newPageSize: string) => {
+    setPageSize(Number(newPageSize));
+    setNewPage(1);
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
   const handleDelete = async (documentId: string) => {
     try {
       await del(`${PLUGIN_ID}/${documentId}`);
-      getRedirects(); // Refetch after delete
+      getRedirects();
     } catch (error) {
       console.error('Error deleting redirect', error);
       toggleNotification({
@@ -96,9 +121,9 @@ const HomePage = () => {
 
   const handleBulkDelete = async () => {
     try {
-      await Promise.all(selectedRedirects.map((id) => del(`${PLUGIN_ID}/${id}`)));
+      await Promise.all(selectedRedirects.map((documentId) => del(`${PLUGIN_ID}/${documentId}`)));
       setSelectedRedirects([]);
-      getRedirects(); // Refetch after deletion
+      getRedirects();
     } catch (error) {
       console.error('Error deleting selected redirects', error);
       toggleNotification({
@@ -108,12 +133,10 @@ const HomePage = () => {
     }
   };
 
-  // Fetch redirects
   const getRedirects = async () => {
     try {
       setIsFetching(true);
 
-      // Create query object and stringify it
       const queryObject = redirectQuery({
         sortBy,
         sortOrder,
@@ -142,43 +165,14 @@ const HomePage = () => {
     }
   };
 
-  // Fetch redirects when the component mounts or when query parameters change
   useEffect(() => {
     getRedirects();
   }, [sortBy, sortOrder, pageSize, page, searchQuery]);
 
   useEffect(() => {
     setSearchQuery(debouncedSearchTerm);
-    setNewPage(1); // Reset to first page on search
-  }, [debouncedSearchTerm, setSearchQuery, setNewPage]);
-
-  // Handle sorting
-  const handleSort = (field: string) => {
-    if (sortBy === field) {
-      // Toggle sort order if sorting by the same field
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      // Set a new sort field and default to ascending order
-      setSortBy(field);
-      setSortOrder('asc');
-    }
-    setNewPage(1); // Reset to the first page
-  };
-
-  // Handle pagination changes
-  const handlePageChange = (newPage: number) => {
-    setNewPage(newPage);
-  };
-
-  const handlePageSizeChange = (newPageSize: string) => {
-    setPageSize(Number(newPageSize));
-    setNewPage(1); // Reset to first page when page size changes
-  };
-
-  // Handle search input change
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
+    setNewPage(1);
+  }, [debouncedSearchTerm]);
 
   return (
     <Main>
@@ -206,7 +200,6 @@ const HomePage = () => {
       />
       <Layouts.Content>
         <Flex gap={4} direction="column" alignItems="stretch">
-          {/* Search Input */}
           <Box paddingBottom={4}>
             <Flex gap={4} alignItems="center">
               <SearchForm>
@@ -230,8 +223,6 @@ const HomePage = () => {
                   })}
                 </Searchbar>
               </SearchForm>
-
-              {/* Bulk Delete Button */}
               {selectedRedirects.length > 0 && (
                 <Button variant="danger" onClick={handleBulkDelete} endIcon={<Trash />}>
                   {formatMessage({
@@ -268,10 +259,8 @@ const HomePage = () => {
                         }
                         onCheckedChange={(checked: any) => {
                           if (checked) {
-                            // Select all redirects
                             setSelectedRedirects(redirects.map((redirect) => redirect.documentId));
                           } else {
-                            // Deselect all redirects
                             setSelectedRedirects([]);
                           }
                         }}
@@ -286,7 +275,7 @@ const HomePage = () => {
                         <Flex
                           alignItems="center"
                           justifyContent={index === headers.length - 1 ? 'flex-end' : ''}
-                          style={{ width: index === headers.length - 1 ? '100%' : 'auto'}}
+                          style={{ width: index === headers.length - 1 ? '100%' : 'auto' }}
                         >
                           <Typography variant="sigma">{header.label}</Typography>
                           {header.isSortable && (
@@ -314,10 +303,8 @@ const HomePage = () => {
                           checked={selectedRedirects.includes(redirect.documentId)}
                           onCheckedChange={(checked: any) => {
                             if (checked) {
-                              // Add the selected redirect to the list
                               setSelectedRedirects([...selectedRedirects, redirect.documentId]);
                             } else {
-                              // Remove the deselected redirect from the list
                               setSelectedRedirects(
                                 selectedRedirects.filter((id) => id !== redirect.documentId)
                               );
@@ -363,16 +350,38 @@ const HomePage = () => {
                 </Tbody>
               </Table>
 
-              {/* Pagination */}
-              <Box paddingTop={4}>
-                {pagination && (
-                  <Pagination
-                    activePage={pagination.page}
-                    pageCount={pagination.pageCount}
-                    query={redirectQuery({ sortBy, sortOrder, pageSize, page, searchQuery })}
-                  />
-                )}
-              </Box>
+              <Flex justifyContent="space-between">
+                <Field.Root name="pageSize">
+                  <Field.Label>
+                    {formatMessage({
+                      id: getTranslation('pages.homePage.entries.title'),
+                      defaultMessage: 'Entries per page',
+                    })}
+                  </Field.Label>
+                  <SingleSelect
+                    onChange={(value: string) => handlePageSizeChange(value)}
+                    value={String(pageSize)}
+                  >
+                    {pageSizes.map((size) => (
+                      <SingleSelectOption key={size} value={String(size)}>
+                        {size}
+                      </SingleSelectOption>
+                    ))}
+                  </SingleSelect>
+                  <Field.Hint />
+                </Field.Root>
+
+                {/* Pagination */}
+                <Box paddingTop={4}>
+                  {pagination && (
+                    <Pagination
+                      activePage={pagination.page}
+                      pageCount={pagination.pageCount}
+                      handlePageChange={handlePageChange}
+                    />
+                  )}
+                </Box>
+              </Flex>
             </>
           ) : (
             <Box background="neutral100">
