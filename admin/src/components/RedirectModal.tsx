@@ -18,23 +18,48 @@ const RedirectModal = ({
   const { formatMessage } = useIntl();
   const { post, put } = useFetchClient();
 
-  const [source, setSource] = useState<string>('');
-  const [destination, setDestination] = useState<string>('');
-  const [permanent, setPermanent] = useState<boolean>(false);
+  // Initialize state with default values to ensure controlled components
+  const [formData, setFormData] = useState({
+    source: '',
+    destination: '',
+    permanent: false, // Initialize as false
+  });
 
   // State for tracking form errors
   const [formErrors, setFormErrors] = useState<{ source?: string; destination?: string }>({});
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPermanent(!permanent);
+  // Populate form fields when editing an existing redirect
+  useEffect(() => {
+    if (selectedRedirect) {
+      setFormData({
+        source: selectedRedirect.source || '',
+        destination: selectedRedirect.destination || '',
+        permanent: selectedRedirect.permanent || false,
+      });
+    } else {
+      setFormData({
+        source: '',
+        destination: '',
+        permanent: false,
+      });
+    }
+  }, [selectedRedirect]);
+
+  // Handle input changes for text fields
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleSourceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSource(e.target.value);
-  };
-
-  const handleDestinationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDestination(e.target.value);
+  // Handle checkbox change
+  const handleCheckboxChange = (value: boolean) => {
+    setFormData((prev) => ({
+      ...prev,
+      permanent: value,
+    }));
   };
 
   // Validation schema for the form
@@ -46,14 +71,13 @@ const RedirectModal = ({
 
   // Handle form submission (create or update)
   const handleSubmit = async (redirect: any) => {
-    console.log(redirect);
     try {
       setFormErrors({}); // Clear previous errors
 
       // Include the 'permanent' field in the redirect object
-      const payload = { ...redirect, permanent };
+      const payload = { ...redirect, permanent: formData.permanent };
 
-      if (selectedRedirect) {
+      if (selectedRedirect && selectedRedirect.documentId) {
         // Update existing redirect
         await put(`${PLUGIN_ID}/${selectedRedirect.documentId}`, payload);
       } else {
@@ -79,17 +103,8 @@ const RedirectModal = ({
     }
   };
 
-  useEffect(() => {
-    if (selectedRedirect) {
-      setSource(selectedRedirect.source || '');
-      setDestination(selectedRedirect.destination || '');
-      setPermanent(selectedRedirect.permanent || false);
-    } else {
-      setSource('');
-      setDestination('');
-      setPermanent(false);
-    }
-  }, [selectedRedirect]);
+  // Destructure formData for ease of access
+  const { source, destination, permanent } = formData;
 
   return (
     <Modal.Root onOpenChange={handleCloseModal} open={visible} labelledBy="title">
@@ -108,13 +123,14 @@ const RedirectModal = ({
           </Modal.Title>
         </Modal.Header>
         <Form
+          key={selectedRedirect ? selectedRedirect.documentId : 'new'}
           method={selectedRedirect ? 'PUT' : 'POST'}
           onSubmit={handleSubmit}
           validationSchema={validationSchema}
           initialValues={{ source, destination, permanent }}
         >
           <Modal.Body>
-            <Grid.Root gap={4}>
+            <Grid.Root gap={4} gridCols={12}>
               <Grid.Item col={5}>
                 <Box width="100%">
                   <Field.Root name="source" error={formErrors.source}>
@@ -124,8 +140,8 @@ const RedirectModal = ({
                         defaultMessage: 'Source',
                       })}
                     </Field.Label>
-                    <Field.Input type="text" value={source} onChange={handleSourceChange} />
-                    <Field.Error />
+                    <Field.Input type="text" name="source" value={source} onChange={handleChange} />
+                    {formErrors.source && <Field.Error>{formErrors.source}</Field.Error>}
                   </Field.Root>
                 </Box>
               </Grid.Item>
@@ -140,10 +156,11 @@ const RedirectModal = ({
                     </Field.Label>
                     <Field.Input
                       type="text"
+                      name="destination"
                       value={destination}
-                      onChange={handleDestinationChange}
+                      onChange={handleChange}
                     />
-                    <Field.Error />
+                    {formErrors.destination && <Field.Error>{formErrors.destination}</Field.Error>}
                   </Field.Root>
                 </Box>
               </Grid.Item>
