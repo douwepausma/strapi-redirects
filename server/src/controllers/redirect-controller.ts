@@ -44,11 +44,22 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
    */
   async findAll(ctx) {
     try {
-      const params = ctx.query;
+      const { sort, filters, pagination } = ctx.query;
+
+      const params = {
+        sort: sort || 'id:desc',
+        filters: filters || {},
+        pagination: {
+          page: pagination?.page ? parseInt(pagination.page.toString(), 10) : 1,
+          pageSize: pagination?.pageSize ? parseInt(pagination.pageSize.toString(), 10) : 10,
+        },
+      };
+
       const result = await strapi
         .plugin('strapi-redirects')
         .service('redirectService')
         .findAll(params);
+
       ctx.body = result;
     } catch (error) {
       this.handleError(ctx, error, 'Failed to fetch redirects.');

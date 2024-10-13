@@ -7,32 +7,12 @@ import type { Core } from '@strapi/types';
 
 const { ApplicationError } = errors;
 import { validateRedirect } from '../helpers/redirectValidationHelper';
-
-export interface RedirectInput {
-  source: string;
-  destination: string;
-  permanent: boolean;
-}
-
-export type ImportStatus = 'INVALID' | 'ERROR' | 'UPDATED' | 'CREATED';
-
-export interface ImportResult extends RedirectInput {
-  status: ImportStatus;
-  reason?: string;
-  details?: any;
-  error?: string;
-}
-
-export interface FindAllParams {
-  sort?: string | string[];
-  filters?: Record<string, any>;
-  pagination?: {
-    page?: number;
-    pageSize?: number;
-    start?: number;
-    limit?: number;
-  };
-}
+import {
+  RedirectInput,
+  ImportResult,
+  FindAllResponse,
+  FindAllParams,
+} from '../../../types/redirectPluginTypes';
 
 export default factories.createCoreService(
   'plugin::strapi-redirects.redirect',
@@ -60,20 +40,34 @@ export default factories.createCoreService(
      * @param params
      * @returns
      */
-    async findAll(params: FindAllParams = {}) {
-      const { sort = 'documentId:desc', filters = {}, pagination = {} } = params;
+    async findAll(params: FindAllParams = {}): Promise<FindAllResponse> {
+      const { sort = 'id:desc', filters = {}, pagination = {} } = params;
 
-      const redirects = await strapi.documents('plugin::strapi-redirects.redirect').findMany({
-        filters,
-        sort,
-        pagination,
+      const page = pagination.page ? parseInt(pagination.page.toString(), 10) : 1;
+      const pageSize = pagination.pageSize ? parseInt(pagination.pageSize.toString(), 10) : 10;
+
+      // Fetch redirects with filters, sort, and pagination
+      const redirects: any = await strapi.documents('plugin::strapi-redirects.redirect').findMany({
+        filters, // Apply the search filters
+        sort, // Apply the sorting order
+        pagination: { page, pageSize }, // Pagination
       });
 
+      // Fetch total count of redirects
       const total = await strapi.documents('plugin::strapi-redirects.redirect').count({ filters });
+
+      const pageCount = Math.ceil(total / pageSize);
 
       return {
         redirects,
-        total,
+        meta: {
+          pagination: {
+            page,
+            pageSize,
+            pageCount,
+            total,
+          },
+        },
       };
     },
 

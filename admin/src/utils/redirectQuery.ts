@@ -1,5 +1,4 @@
-import * as qs from 'qs';
-
+// redirectQuery.ts
 interface QueryParams {
   sortBy: string;
   sortOrder: string;
@@ -8,29 +7,36 @@ interface QueryParams {
   searchQuery: string;
 }
 
-const redirectQuery = ({ sortBy, sortOrder, pageSize, page, searchQuery }: QueryParams): string => {
-  const query = qs.stringify(
-    {
-      sort: [`${sortBy}:${sortOrder}`],
-      pagination: {
-        pageSize,
-        page,
-      },
-      filters: {
-        $or: [
-          {
-            source: { $contains: searchQuery },
-          },
-          {
-            destination: { $contains: searchQuery },
-          },
-        ],
-      },
+const redirectQuery = ({
+  sortBy,
+  sortOrder,
+  pageSize,
+  page,
+  searchQuery,
+}: QueryParams): Record<string, any> => {
+  const baseQuery: Record<string, any> = {
+    sort: [`${sortBy}:${sortOrder}`],
+    pagination: {
+      pageSize,
+      page,
     },
-    { encodeValuesOnly: true }
-  );
+  };
 
-  return query;
+  // Add search filters if a search query exists
+  if (searchQuery.trim() !== '') {
+    baseQuery.filters = {
+      $or: [
+        {
+          source: { $containsi: searchQuery },
+        },
+        {
+          destination: { $containsi: searchQuery },
+        },
+      ],
+    };
+  }
+
+  return baseQuery;
 };
 
 export { redirectQuery };

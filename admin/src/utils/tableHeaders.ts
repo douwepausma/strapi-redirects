@@ -1,13 +1,6 @@
 import { IntlShape } from 'react-intl';
-import { Table } from '@strapi/admin/strapi-admin';
 import { getTranslation } from './getTranslation';
-
-export interface RedirectTableHeader extends Table.Header<any, any> {
-  name: string;
-  label: string;
-  key: string;
-  isSortable: boolean;
-}
+import { RedirectTableHeader } from '../../../types/redirectPluginTypes';
 
 const tableHeaders = (formatMessage: IntlShape['formatMessage']): RedirectTableHeader[] => [
   {
@@ -17,7 +10,7 @@ const tableHeaders = (formatMessage: IntlShape['formatMessage']): RedirectTableH
       defaultMessage: 'Source',
     }),
     key: 'source',
-    isSortable: false,
+    isSortable: true,
   },
   {
     name: 'destination',
@@ -26,7 +19,7 @@ const tableHeaders = (formatMessage: IntlShape['formatMessage']): RedirectTableH
       defaultMessage: 'Destination',
     }),
     key: 'destination',
-    isSortable: false,
+    isSortable: true,
   },
   {
     name: 'permanent',

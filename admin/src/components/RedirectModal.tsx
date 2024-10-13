@@ -5,7 +5,7 @@ import { Form, useFetchClient } from '@strapi/admin/strapi-admin';
 import { Modal, Button, Grid, Field, Checkbox, Box, Flex } from '@strapi/design-system';
 import { Check } from '@strapi/icons';
 
-import { RedirectModalProps } from '../utils/redirectPluginTypes';
+import { RedirectModalProps } from '../../../types/redirectPluginTypes';
 import { getTranslation } from '../utils/getTranslation';
 import { PLUGIN_ID } from '../pluginId';
 
