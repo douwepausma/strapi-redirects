@@ -1,8 +1,8 @@
 import { IntlShape } from 'react-intl';
 import { getTranslation } from './getTranslation';
-import { RedirectTableHeader } from '../../../types/redirectPluginTypes';
+import { TableHeaders } from '../../../types/redirectPluginTypes';
 
-const tableHeaders = (formatMessage: IntlShape['formatMessage']): RedirectTableHeader[] => [
+const importTableHeaders = (formatMessage: IntlShape['formatMessage']): TableHeaders[] => [
   {
     name: 'source',
     label: formatMessage({
@@ -31,14 +31,14 @@ const tableHeaders = (formatMessage: IntlShape['formatMessage']): RedirectTableH
     isSortable: true,
   },
   {
-    name: 'actions',
+    name: 'status',
     label: formatMessage({
-      id: getTranslation('overview.table.headers.actions'),
-      defaultMessage: 'Actions',
+      id: getTranslation('overview.table.headers.status'),
+      defaultMessage: 'Status',
     }),
-    key: 'actions',
-    isSortable: false,
+    key: 'status',
+    isSortable: true,
   },
 ];
 
-export { tableHeaders };
+export { importTableHeaders };

@@ -1,11 +1,20 @@
 import { Table } from '@strapi/admin/strapi-admin';
 
+export type ImportStatus = 'INVALID' | 'ERROR' | 'UPDATED' | 'CREATED';
+
 export interface RedirectType {
   id: number;
   documentId: string;
   source: string;
   destination: string;
   permanent: boolean;
+}
+
+export interface RedirectImportType {
+  source: string;
+  destination: string;
+  permanent: boolean;
+  status: string;
 }
 
 export interface PaginationType {
@@ -18,8 +27,13 @@ export interface PaginationType {
 export interface RedirectModalProps {
   visible: boolean;
   selectedRedirect?: RedirectType | null;
-  handleCloseModal: () => void;
+  handleCloseRedirectModal: () => void;
   onRedirectSaved: () => void;
+}
+
+export interface ImportModalProps {
+  visible: boolean;
+  handleCloseImportModal: () => void;
 }
 
 export interface RedirectInput {
@@ -27,8 +41,6 @@ export interface RedirectInput {
   destination: string;
   permanent: boolean;
 }
-
-export type ImportStatus = 'INVALID' | 'ERROR' | 'UPDATED' | 'CREATED';
 
 export interface ImportResult extends RedirectInput {
   status: ImportStatus;
@@ -60,7 +72,7 @@ export interface FindAllResponse {
   };
 }
 
-export interface RedirectTableHeader extends Table.Header<any, any> {
+export interface TableHeaders extends Table.Header<any, any> {
   name: string;
   label: string;
   isSortable: boolean;

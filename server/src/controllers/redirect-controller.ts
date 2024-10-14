@@ -100,6 +100,7 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
         .plugin('strapi-redirects')
         .service('redirectService')
         .update(id, ctx.request.body);
+
       if (!redirect) return ctx.notFound('Redirect not found.');
       ctx.body = redirect;
     } catch (error) {
@@ -111,13 +112,13 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
    * Delete a redirect
    */
   async delete(ctx) {
-    console.log('delete', ctx.params);
     const { documentId } = ctx.params;
     try {
       const redirect = await strapi
         .plugin('strapi-redirects')
         .service('redirectService')
         .delete(documentId);
+        
       if (!redirect) return ctx.notFound('Redirect not found.');
       ctx.body = redirect;
     } catch (error) {

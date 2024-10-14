@@ -24,24 +24,27 @@ import {
   SingleSelect,
   SingleSelectOption,
 } from '@strapi/design-system';
-import { Pencil, Plus, Trash, ChevronUp, ChevronDown } from '@strapi/icons';
+import { Pencil, Plus, Trash, ChevronUp, ChevronDown, Upload } from '@strapi/icons';
 
 import { PLUGIN_ID } from '../pluginId';
 import { RedirectType, PaginationType } from '../../../types/redirectPluginTypes';
 import { getTranslation } from '../utils/getTranslation';
-import { tableHeaders } from '../utils/tableHeaders';
+import { redirectTableHeaders } from '../utils/redirectTableHeaders';
 import { redirectQuery } from '../utils/redirectQuery';
 import { useSearchQuery } from '../hooks/useSearchQuery';
 
-import { NoContentIcon } from '../components/NoContentIcon';
+import { NoContentIcon } from '../components/Icons/NoContentIcon';
 import { RedirectModal } from '../components/RedirectModal';
-import Pagination from '../components/Pagination';
+import { ImportModal } from '../components/ImportModal';
+import { Pagination } from '../components/Pagination';
 
 const HomePage = () => {
   const { formatMessage } = useIntl();
   const { toggleNotification } = useNotification();
   const { get, del } = useFetchClient();
 
+  const pageSizes = [5, 10, 20, 50];
+  const headers = redirectTableHeaders(formatMessage);
   const { pageSize, page, setNewPage, setPageSize } = useSearchQuery();
 
   const [isFetching, setIsFetching] = useState(false);
@@ -58,29 +61,36 @@ const HomePage = () => {
     pageCount: 1,
     total: 0,
   });
-  const pageSizes = [5, 10, 20, 50];
 
   // Modal state management
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRedirectModalOpen, setIsRedirectModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   // Bulk delete state
   const [selectedRedirects, setSelectedRedirects] = useState<string[]>([]);
 
-  const headers = tableHeaders(formatMessage);
-
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
+  const handleRedirectModal = () => {
+    setIsRedirectModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleCloseRedirectModal = () => {
+    setIsRedirectModalOpen(false);
     setSelectedRedirect(null);
-    getRedirects(); // Refetch redirects on modal close
+    getRedirects();
+  };
+
+  const handleImportModal = () => {
+    setIsImportModalOpen(true);
+  };
+
+  const handleCloseImportModal = () => {
+    setIsImportModalOpen(false);
+    getRedirects();
   };
 
   const handleEdit = (redirect: RedirectType) => {
     setSelectedRedirect(redirect);
-    setIsModalOpen(true);
+    setIsRedirectModalOpen(true);
   };
 
   const handleSort = (field: string) => {
@@ -178,12 +188,21 @@ const HomePage = () => {
     <Main>
       <Layouts.Header
         primaryAction={
-          <Button variant="primary" startIcon={<Plus />} onClick={handleOpenModal}>
-            {formatMessage({
-              id: getTranslation('pages.homePage.header.button'),
-              defaultMessage: 'Add a Redirect',
-            })}
-          </Button>
+          <Flex gap={4}>
+            <Button variant="secondary" startIcon={<Upload />} onClick={handleImportModal}>
+              {formatMessage({
+                id: getTranslation('pages.homePage.header.button.import'),
+                defaultMessage: 'Import Redirects',
+              })}
+            </Button>
+
+            <Button variant="primary" startIcon={<Plus />} onClick={handleRedirectModal}>
+              {formatMessage({
+                id: getTranslation('pages.homePage.header.button.redirect'),
+                defaultMessage: 'Add a Redirect',
+              })}
+            </Button>
+          </Flex>
         }
         title={formatMessage({
           id: getTranslation('plugin.name'),
@@ -392,7 +411,7 @@ const HomePage = () => {
                   defaultMessage: "You don't have any redirects yet...",
                 })}
                 action={
-                  <Button variant="secondary" startIcon={<Plus />} onClick={handleOpenModal}>
+                  <Button variant="secondary" startIcon={<Plus />} onClick={handleRedirectModal}>
                     {formatMessage({
                       id: getTranslation('overview.table.body.empty.button'),
                       defaultMessage: 'Create your first Redirect',
@@ -407,11 +426,14 @@ const HomePage = () => {
 
       {/* Redirect Modal */}
       <RedirectModal
-        visible={isModalOpen}
+        visible={isRedirectModalOpen}
         selectedRedirect={selectedRedirect}
-        handleCloseModal={handleCloseModal}
+        handleCloseRedirectModal={handleCloseRedirectModal}
         onRedirectSaved={getRedirects}
       />
+
+      {/* Import Modal */}
+      <ImportModal visible={isImportModalOpen} handleCloseImportModal={handleCloseImportModal} />
     </Main>
   );
 };

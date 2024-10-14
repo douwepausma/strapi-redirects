@@ -14,11 +14,7 @@ interface PaginationProps {
   handlePageChange: (newPage: number) => void;
 }
 
-const Pagination: React.FC<PaginationProps> = ({
-  activePage,
-  pageCount,
-  handlePageChange,
-}) => {
+const Pagination: React.FC<PaginationProps> = ({ activePage, pageCount, handlePageChange }) => {
   const { formatMessage } = useIntl();
 
   const range = (start: number, end: number) => {
@@ -88,4 +84,4 @@ const Pagination: React.FC<PaginationProps> = ({
   );
 };
 
-export default Pagination;
+export { Pagination };

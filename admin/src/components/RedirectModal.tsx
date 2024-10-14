@@ -12,7 +12,7 @@ import { PLUGIN_ID } from '../pluginId';
 const RedirectModal = ({
   visible,
   selectedRedirect = null,
-  handleCloseModal,
+  handleCloseRedirectModal,
   onRedirectSaved,
 }: RedirectModalProps) => {
   const { formatMessage } = useIntl();
@@ -85,7 +85,7 @@ const RedirectModal = ({
         await post(`${PLUGIN_ID}`, payload);
       }
 
-      handleCloseModal();
+      handleCloseRedirectModal();
       onRedirectSaved(); // Trigger refetching of redirects
     } catch (error: any) {
       // Handle specific error responses
@@ -107,17 +107,17 @@ const RedirectModal = ({
   const { source, destination, permanent } = formData;
 
   return (
-    <Modal.Root onOpenChange={handleCloseModal} open={visible} labelledBy="title">
+    <Modal.Root onOpenChange={handleCloseRedirectModal} open={visible} labelledBy="title">
       <Modal.Content>
         <Modal.Header>
           <Modal.Title id="title">
             {selectedRedirect
               ? formatMessage({
-                  id: getTranslation('form.title.edit'),
+                  id: getTranslation('modal.redirect.title.edit'),
                   defaultMessage: 'Edit a Redirect',
                 })
               : formatMessage({
-                  id: getTranslation('form.title.create'),
+                  id: getTranslation('modal.redirect.title.create'),
                   defaultMessage: 'Add a Redirect',
                 })}
           </Modal.Title>
@@ -136,7 +136,7 @@ const RedirectModal = ({
                   <Field.Root name="source" error={formErrors.source}>
                     <Field.Label>
                       {formatMessage({
-                        id: getTranslation('form.field.source'),
+                        id: getTranslation('modal.redirect.field.source'),
                         defaultMessage: 'Source',
                       })}
                     </Field.Label>
@@ -150,7 +150,7 @@ const RedirectModal = ({
                   <Field.Root name="destination" error={formErrors.destination}>
                     <Field.Label>
                       {formatMessage({
-                        id: getTranslation('form.field.destination'),
+                        id: getTranslation('modal.redirect.field.destination'),
                         defaultMessage: 'Destination',
                       })}
                     </Field.Label>
@@ -173,7 +173,7 @@ const RedirectModal = ({
                       onCheckedChange={handleCheckboxChange}
                     >
                       {formatMessage({
-                        id: getTranslation('form.field.permanent'),
+                        id: getTranslation('modal.redirect.field.permanent'),
                         defaultMessage: 'Permanent',
                       })}
                     </Checkbox>
@@ -184,16 +184,16 @@ const RedirectModal = ({
           </Modal.Body>
           <Modal.Footer>
             <Modal.Close>
-              <Button variant="tertiary" onClick={handleCloseModal}>
+              <Button variant="tertiary" onClick={handleCloseRedirectModal}>
                 {formatMessage({
-                  id: getTranslation('form.cancel'),
+                  id: getTranslation('modal.cancel'),
                   defaultMessage: 'Cancel',
                 })}
               </Button>
             </Modal.Close>
 
             <Button type="submit" startIcon={<Check />}>
-              {formatMessage({ id: 'form.confirm', defaultMessage: 'Save' })}
+              {formatMessage({ id: 'modal.redirect.confirm', defaultMessage: 'Save' })}
             </Button>
           </Modal.Footer>
         </Form>
