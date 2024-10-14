@@ -51,7 +51,7 @@ const HomePage = () => {
   const [redirects, setRedirects] = useState<RedirectType[]>([]);
   const [selectedRedirect, setSelectedRedirect] = useState<RedirectType | null>(null);
   const [sortBy, setSortBy] = useState<string>('source');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);

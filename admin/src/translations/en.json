@@ -27,7 +27,11 @@
   "modal.cancel": "Cancel",
   "modal.import.title": "Import Redirects",
   "modal.import.confirm": "Import Redirects",
+  "modal.import.dragAndDrop": "Drag and drop your CSV file here, or click to upload",
   "form.notification.updated": "Redirect updated successfully!",
   "form.notification.created": "Redirect created successfully!",
-  "import.title": "Import Redirects"
+  "import.title": "Import Redirects",
+  "components.pagination.go-to": "Go to page {page}",
+  "components.pagination.go-to-previous": "Go to previous page",
+  "components.pagination.go-to-next": "Go to next page"
 }

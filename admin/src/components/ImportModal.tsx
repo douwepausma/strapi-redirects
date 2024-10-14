@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
 import { useIntl } from 'react-intl';
 import { useFetchClient } from '@strapi/admin/strapi-admin';
 import {
@@ -14,15 +15,44 @@ import {
   Td,
   Th,
 } from '@strapi/design-system';
-import { ChevronDown, ChevronUp, Upload } from '@strapi/icons';
+import { ChevronDown, ChevronUp, File, Upload } from '@strapi/icons';
 
 import { PLUGIN_ID } from '../pluginId';
 import { ImportModalProps, RedirectImportType } from '../../../types/redirectPluginTypes';
 import { getTranslation } from '../utils/getTranslation';
 
-import { NoContentIcon } from '../components/Icons/NoContentIcon';
 import { importTableHeaders } from '../utils/importTableHeaders';
 import { parseAndValidateCSV } from '../utils/importParser';
+
+const StyledLabel = styled.label<{ isDragOver: boolean }>`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 48px;
+  border-width: 3px;
+  border-color: ${({ isDragOver }) => (isDragOver ? 'hsl(210, 100%, 50%)' : '#ddd')};
+  border-style: dashed;
+  border-radius: 12px;
+  cursor: pointer;
+
+  &::after {
+    content: '';
+    display: ${({ isDragOver }) => (isDragOver ? 'block' : 'none')};
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 5;
+  }
+`;
+
+const HiddenInput = styled.input`
+  display: none;
+`;
 
 const ImportModal = ({ visible, handleCloseImportModal }: ImportModalProps) => {
   const { formatMessage } = useIntl();
@@ -30,17 +60,37 @@ const ImportModal = ({ visible, handleCloseImportModal }: ImportModalProps) => {
 
   const [redirects, setRedirects] = useState<RedirectImportType[]>([]);
   const [sortBy, setSortBy] = useState<string>('source');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [isDragOver, setIsDragOver] = useState(false);
 
   const headers = importTableHeaders(formatMessage);
 
   const handleSort = (field: string) => {
+    let sortedRedirects = [...redirects];
+
+    // Toggle sort order or set new sort field
     if (sortBy === field) {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
       setSortBy(field);
       setSortOrder('asc');
     }
+
+    // Sort logic based on field and order
+    sortedRedirects.sort((a, b) => {
+      const valA = a[field as keyof RedirectImportType];
+      const valB = b[field as keyof RedirectImportType];
+
+      // Sort strings and booleans differently
+      if (typeof valA === 'string' && typeof valB === 'string') {
+        return sortOrder === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+      } else if (typeof valA === 'boolean' && typeof valB === 'boolean') {
+        return sortOrder === 'asc' ? Number(valA) - Number(valB) : Number(valB) - Number(valA);
+      }
+      return 0; // Fallback case
+    });
+
+    setRedirects(sortedRedirects);
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement> | DragEvent) => {
@@ -83,17 +133,30 @@ const ImportModal = ({ visible, handleCloseImportModal }: ImportModalProps) => {
 
   const handleImport = async () => {
     try {
-      // Remove the `status` field from redirects before importing
       const dataToImport = redirects.map(({ status, ...rest }) => rest);
 
       const response = await post(`/${PLUGIN_ID}/import`, dataToImport);
       console.log('Import successful:', response);
 
-      // Optionally, you can handle the response and update the UI
       handleCloseImportModal();
     } catch (error) {
       console.error('Error importing redirects:', error);
     }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: any) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    handleFileChange(e);
   };
 
   return (
@@ -109,6 +172,37 @@ const ImportModal = ({ visible, handleCloseImportModal }: ImportModalProps) => {
         </Modal.Header>
 
         <Modal.Body>
+          {redirects.length === 0 && (
+            <Flex>
+              <StyledLabel
+                isDragOver={isDragOver}
+                onDragEnter={handleDragOver}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
+                <Box padding={4}>
+                  <File
+                    width="24px"
+                    height="24px"
+                    color={isDragOver ? 'hsl(210, 100%, 50%)' : 'neutral600'}
+                  />
+                </Box>
+                <Typography
+                  variant="beta"
+                  textColor={isDragOver ? 'hsl(210, 100%, 50%)' : 'neutral600'}
+                  as="p"
+                >
+                  {formatMessage({
+                    id: getTranslation('modal.import.dragAndDrop'),
+                    defaultMessage: 'Drag and drop your CSV file here, or click to upload',
+                  })}
+                </Typography>
+                <HiddenInput type="file" accept=".csv" onChange={handleFileChange} />
+              </StyledLabel>
+            </Flex>
+          )}
+
           {redirects.length > 0 && (
             <Table>
               <Thead>
@@ -154,7 +248,9 @@ const ImportModal = ({ visible, handleCloseImportModal }: ImportModalProps) => {
                       <Typography>{redirect.permanent ? 'Yes' : 'No'}</Typography>
                     </Td>
                     <Td>
-                      <Typography>{redirect.status}</Typography>
+                      <Flex width="100%" justifyContent="flex-end">
+                        <Typography>{redirect.status}</Typography>
+                      </Flex>
                     </Td>
                   </Tr>
                 ))}
