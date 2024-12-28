@@ -1,1 +1,1 @@
-export const PLUGIN_ID = 'strapi-redirects';
+export const PLUGIN_ID = 'redirects';

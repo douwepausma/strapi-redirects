@@ -1,36 +1,38 @@
 // content-types/redirect.ts
 
 const schema = {
-  kind: "collectionType",
-  collectionName: "redirects",
+  kind: 'collectionType',
+  collectionName: 'redirects',
   info: {
-    singularName: "redirect",
-    pluralName: "redirects",
-    displayName: "Redirects"
+    singularName: 'redirect',
+    pluralName: 'redirects',
+    displayName: 'Redirects',
   },
   options: {
     draftAndPublish: false,
-    comment: ""
+    comment: '',
   },
   pluginOptions: {
-    "content-manager": {
-      "visible": false
+    'content-manager': {
+      visible: false,
     },
-    "content-type-builder": {
-      "visible": false
-    }
+    'content-type-builder': {
+      visible: false,
+    },
   },
   attributes: {
     source: {
-      "type": "string"
+      type: 'string',
+      required: true,
     },
     destination: {
-      "type": "string"
+      type: 'string',
+      required: true,
     },
     permanent: {
-      "type": "boolean"
-    }
-  }
+      type: 'boolean',
+    },
+  },
 };
 
 export default {

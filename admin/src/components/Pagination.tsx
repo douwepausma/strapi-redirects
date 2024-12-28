@@ -18,21 +18,21 @@ const Pagination: React.FC<PaginationProps> = ({ activePage, pageCount, handlePa
   const { formatMessage } = useIntl();
 
   const range = (start: number, end: number) => {
-    const length = end - start + 1;
-    return Array.from({ length }, (_, i) => start + i);
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   };
 
-  const startPages = range(1, Math.min(1, pageCount));
+  // Ensure we don't include duplicate or invalid ranges
+  const startPages = range(1, Math.min(2, pageCount));
   const endPages = range(Math.max(pageCount - 1, 2), pageCount);
 
-  const siblingsStart = Math.max(Math.min(activePage - 1, pageCount - 2), 2);
-  const siblingsEnd = Math.min(Math.max(activePage + 1, 2), pageCount - 1);
+  const siblingsStart = Math.max(Math.min(activePage - 1, pageCount - 2), 3);
+  const siblingsEnd = Math.min(Math.max(activePage + 1, 3), pageCount - 2);
 
   const items = [
     ...startPages,
-    ...(siblingsStart > 2 ? ['start-ellipsis'] : []),
+    ...(siblingsStart > 3 ? ['start-ellipsis'] : []),
     ...range(siblingsStart, siblingsEnd),
-    ...(siblingsEnd < pageCount - 1 ? ['end-ellipsis'] : []),
+    ...(siblingsEnd < pageCount - 2 ? ['end-ellipsis'] : []),
     ...endPages,
   ];
 
@@ -51,12 +51,7 @@ const Pagination: React.FC<PaginationProps> = ({ activePage, pageCount, handlePa
       {items.map((item, index) => {
         if (typeof item === 'number') {
           return (
-            <PageLink
-              key={index}
-              onClick={() => handlePageChange(item)}
-              number={item}
-              isActive={item === activePage}
-            >
+            <PageLink key={index} onClick={() => handlePageChange(item)} number={item}>
               {formatMessage(
                 {
                   id: 'components.pagination.go-to',

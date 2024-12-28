@@ -45,7 +45,7 @@ const HomePage = () => {
 
   const pageSizes = [5, 10, 20, 50];
   const headers = redirectTableHeaders(formatMessage);
-  const { pageSize, page, setNewPage, setPageSize } = useSearchQuery();
+  const { pageSize, page, setNewPage, setNewPageSize } = useSearchQuery();
 
   const [isFetching, setIsFetching] = useState(false);
   const [redirects, setRedirects] = useState<RedirectType[]>([]);
@@ -108,7 +108,7 @@ const HomePage = () => {
   };
 
   const handlePageSizeChange = (newPageSize: string) => {
-    setPageSize(Number(newPageSize));
+    setNewPageSize(Number(newPageSize));
     setNewPage(1);
   };
 

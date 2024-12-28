@@ -1,21 +1,19 @@
-// src/plugins/your-plugin-name/services/redirect.ts
-import { pick } from 'lodash';
-
 import { errors } from '@strapi/utils';
 import { factories } from '@strapi/strapi';
 import type { Core } from '@strapi/types';
 
 const { ApplicationError } = errors;
-import { validateRedirect } from '../helpers/redirectValidationHelper';
+
+import { validateRedirect } from '../../helpers/redirectValidationHelper';
 import {
   RedirectInput,
   ImportResult,
   FindAllResponse,
   FindAllParams,
-} from '../../../types/redirectPluginTypes';
+} from '../../../../types/redirectPluginTypes';
 
 export default factories.createCoreService(
-  'plugin::strapi-redirects.redirect',
+  'plugin::redirects.redirect',
   ({ strapi }: { strapi: Core.Strapi }) => ({
     format(urlTemplate: string, fieldValue: string, locale = '') {
       return urlTemplate.replace('[field]', fieldValue).replace('[locale]', locale);
@@ -28,7 +26,7 @@ export default factories.createCoreService(
      */
     async findOne(id: string) {
       const result = await strapi
-        .documents('plugin::strapi-redirects.redirect')
+        .documents('plugin::redirects.redirect')
         .findOne({ documentId: id });
 
       return result;
@@ -53,7 +51,7 @@ export default factories.createCoreService(
       }
 
       // Fetch redirects with filters, sort, and pagination
-      const redirects: any = await strapi.documents('plugin::strapi-redirects.redirect').findMany({
+      const redirects: any = await strapi.documents('plugin::redirects.redirect').findMany({
         filters, // Apply the search filters
         sort, // Apply the sorting order
         start,
@@ -61,7 +59,7 @@ export default factories.createCoreService(
       });
 
       // Fetch total count of redirects
-      const total = await strapi.documents('plugin::strapi-redirects.redirect').count({ filters });
+      const total = await strapi.documents('plugin::redirects.redirect').count({ filters });
 
       const pageCount = Math.ceil(total / pageSize);
 
@@ -86,7 +84,7 @@ export default factories.createCoreService(
      */
     async create(redirect: RedirectInput) {
       const result = await strapi
-        .documents('plugin::strapi-redirects.redirect')
+        .documents('plugin::redirects.redirect')
         .create({ data: redirect });
       return result;
     },
@@ -111,7 +109,7 @@ export default factories.createCoreService(
       };
 
       const result = await strapi
-        .documents('plugin::strapi-redirects.redirect')
+        .documents('plugin::redirects.redirect')
         .update(updateParams);
 
       return result;
@@ -124,7 +122,7 @@ export default factories.createCoreService(
      * @returns
      */
     async delete(documentId: string) {
-      return await strapi.documents('plugin::strapi-redirects.redirect').delete({ documentId });
+      return await strapi.documents('plugin::redirects.redirect').delete({ documentId });
     },
 
     /**
@@ -171,7 +169,7 @@ export default factories.createCoreService(
 
           let operationResult;
           const existingRedirects = await strapi
-            .documents('plugin::strapi-redirects.redirect')
+            .documents('plugin::redirects.redirect')
             .findMany({
               filters: { source: row.source },
             });
@@ -185,7 +183,7 @@ export default factories.createCoreService(
             };
 
             operationResult = await strapi
-              .documents('plugin::strapi-redirects.redirect')
+              .documents('plugin::redirects.redirect')
               .update(updateParams);
 
             const updatedResult: ImportResult = {
@@ -196,7 +194,7 @@ export default factories.createCoreService(
             importResults.push(updatedResult);
           } else {
             operationResult = await strapi
-              .documents('plugin::strapi-redirects.redirect')
+              .documents('plugin::redirects.redirect')
               .create({ data: dataToSave });
 
             const createdResult: ImportResult = {

@@ -1,7 +1,9 @@
-import settingsService from './setting-service';
-import redirectService from './redirect-service';
+import settingsService from './settings';
+import contentService from './content';
+import redirectService from './redirects';
 
 export default {
-  // settingsService,
+  settingsService,
+  contentService,
   redirectService,
 };

@@ -1,5 +1,5 @@
 import type { Core } from '@strapi/types';
-import { validateRedirect } from '../helpers/redirectValidationHelper';
+import { validateRedirect } from '../../helpers/redirectValidationHelper';
 
 export default ({ strapi }: { strapi: Core.Strapi }) => ({
   /**
@@ -11,27 +11,12 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
   },
 
   /**
-   * Get settings
-   */
-  async getSettings(ctx) {
-    try {
-      const items = await strapi.plugin('strapi-redirects').service('settingService').getList();
-      ctx.body = { items };
-    } catch (error) {
-      this.handleError(ctx, error, 'Failed to fetch settings.');
-    }
-  },
-
-  /**
    * Find one redirect
    */
   async findOne(ctx) {
     const { id } = ctx.params;
     try {
-      const redirect = await strapi
-        .plugin('strapi-redirects')
-        .service('redirectService')
-        .findOne(id);
+      const redirect = await strapi.plugin('redirects').service('redirectService').findOne(id);
       if (!redirect) return ctx.notFound('Redirect not found.');
       ctx.body = redirect;
     } catch (error) {
@@ -55,10 +40,7 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
         },
       };
 
-      const result = await strapi
-        .plugin('strapi-redirects')
-        .service('redirectService')
-        .findAll(params);
+      const result = await strapi.plugin('redirects').service('redirectService').findAll(params);
 
       ctx.body = result;
     } catch (error) {
@@ -77,7 +59,7 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
       }
 
       const redirect = await strapi
-        .plugin('strapi-redirects')
+        .plugin('redirects')
         .service('redirectService')
         .create(ctx.request.body);
       ctx.body = redirect;
@@ -97,7 +79,7 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
       }
 
       const redirect = await strapi
-        .plugin('strapi-redirects')
+        .plugin('redirects')
         .service('redirectService')
         .update(id, ctx.request.body);
 
@@ -115,10 +97,10 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
     const { documentId } = ctx.params;
     try {
       const redirect = await strapi
-        .plugin('strapi-redirects')
+        .plugin('redirects')
         .service('redirectService')
         .delete(documentId);
-        
+
       if (!redirect) return ctx.notFound('Redirect not found.');
       ctx.body = redirect;
     } catch (error) {
@@ -133,10 +115,7 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
     try {
       const data = ctx.request.body;
       if (!Array.isArray(data)) return ctx.badRequest('Invalid data provided for import.');
-      const results = await strapi
-        .plugin('strapi-redirects')
-        .service('redirectService')
-        .import(data);
+      const results = await strapi.plugin('redirects').service('redirectService').import(data);
       ctx.body = results;
     } catch (error) {
       this.handleError(ctx, error, 'Failed to import redirects.');

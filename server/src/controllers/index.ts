@@ -1,7 +1,9 @@
-import contentController from "./content-controller";
-import redirectController from "./redirect-controller";
+import settingsController from './settings';
+import contentController from './content';
+import redirectsController from './redirects';
 
 export default {
-    // contentController,    
-    redirectController,
+  settingsController,
+  contentController,
+  redirectsController,
 };

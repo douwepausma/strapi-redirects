@@ -22,7 +22,7 @@ async function findRedirectsBySource(url: string, excludeId?: string): Promise<a
     filters.documentId = { $ne: excludeId };
   }
 
-  return strapi.documents('plugin::strapi-redirects.redirect').findMany({ filters });
+  return strapi.documents('plugin::redirects.redirect').findMany({ filters });
 }
 
 /**
