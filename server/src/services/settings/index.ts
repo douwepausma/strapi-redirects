@@ -56,7 +56,7 @@ export default ({ strapi }: { strapi: Core.Strapi }) => {
     async getContentTypes() {
       const FIELD_TYPES = ['string', 'uid'];
       const result: ContentType[] = [];
-      console.log('ct', strapi.contentTypes);
+      
       Object.entries(strapi.contentTypes).forEach(([uid, contentType]) => {
         if (!uid.startsWith('api::')) return;
 

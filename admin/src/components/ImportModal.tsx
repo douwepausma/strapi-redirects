@@ -136,7 +136,6 @@ const ImportModal = ({ visible, handleCloseImportModal }: ImportModalProps) => {
       const dataToImport = redirects.map(({ status, ...rest }) => rest);
 
       const response = await post(`/${PLUGIN_ID}/import`, dataToImport);
-      console.log('Import successful:', response);
 
       handleCloseImportModal();
     } catch (error) {
