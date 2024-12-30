@@ -1,10 +1,8 @@
-import { Table } from '@strapi/admin/strapi-admin';
-
 export type ImportStatus = 'INVALID' | 'ERROR' | 'UPDATED' | 'CREATED';
 
 export interface RedirectType {
-  id: number;
-  documentId: string;
+  id?: number;
+  documentId?: string;
   source: string;
   destination: string;
   permanent: boolean;
@@ -72,9 +70,21 @@ export interface FindAllResponse {
   };
 }
 
-export interface TableHeaders extends Table.Header<any, any> {
+export interface TableHeaders {
   name: string;
   label: string;
   isSortable: boolean;
   key: string;
+}
+
+export interface LifecycleSetting {
+  uid: string;
+  enabled: boolean;
+  field: string;
+}
+
+export interface ContentType {
+  uid: string;
+  info: { displayName: string };
+  fields: { name: string }[];
 }

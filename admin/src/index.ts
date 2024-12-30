@@ -1,5 +1,6 @@
 import { prefixPluginTranslations } from './utils/prefixPluginTranslations';
 import { PLUGIN_ID } from './pluginId';
+import AlertRedirectPrompt from './components/AlertRedirectPrompt';
 import { Initializer } from './components/Initializer';
 import { PluginIcon } from './components/Icons/PluginIcon';
 
@@ -17,6 +18,12 @@ export default {
 
         return App;
       },
+    });
+
+    // Inject into Content Manager Edit View
+    app.getPlugin('content-manager').injectComponent('editView', 'right-links', {
+      name: 'alert-redirect-prompt',
+      Component: AlertRedirectPrompt,
     });
 
     app.createSettingSection(

@@ -16,18 +16,7 @@ import {
   SingleSelectOption,
 } from '@strapi/design-system';
 import { PLUGIN_ID } from '../pluginId';
-
-interface LifecycleSetting {
-  uid: string;
-  enabled: boolean;
-  field: string;
-}
-
-interface ContentType {
-  uid: string;
-  info: { displayName: string };
-  fields: { name: string }[];
-}
+import { LifecycleSetting, ContentType } from '../../../types/redirectPluginTypes';
 
 const Settings: React.FC = () => {
   const { formatMessage } = useIntl();
@@ -58,7 +47,9 @@ const Settings: React.FC = () => {
 
       const settingsArray = Array.isArray(settings)
         ? settings
-        : Object.entries(settings).map(([uid, value]) => ({ uid, ...value }));
+        : Object.entries(settings as Record<string, Partial<LifecycleSetting>>).map(
+            ([uid, value]) => ({ uid, ...value })
+          );
 
       setLifecycleSettings(settingsArray);
     } catch (error) {

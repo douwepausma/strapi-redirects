@@ -278,7 +278,11 @@ const HomePage = () => {
                         }
                         onCheckedChange={(checked: any) => {
                           if (checked) {
-                            setSelectedRedirects(redirects.map((redirect) => redirect.documentId));
+                            setSelectedRedirects(
+                              redirects
+                                .map((redirect) => redirect.documentId)
+                                .filter(Boolean) as string[]
+                            );
                           } else {
                             setSelectedRedirects([]);
                           }
@@ -319,13 +323,16 @@ const HomePage = () => {
                       <Td>
                         <Checkbox
                           aria-label={`Select entry ${redirect.id}`}
-                          checked={selectedRedirects.includes(redirect.documentId)}
+                          checked={selectedRedirects.includes(redirect.documentId ?? '')}
                           onCheckedChange={(checked: any) => {
                             if (checked) {
-                              setSelectedRedirects([...selectedRedirects, redirect.documentId]);
+                              setSelectedRedirects([
+                                ...selectedRedirects,
+                                redirect.documentId ?? '',
+                              ]);
                             } else {
                               setSelectedRedirects(
-                                selectedRedirects.filter((id) => id !== redirect.documentId)
+                                selectedRedirects.filter((id) => id !== (redirect.documentId ?? ''))
                               );
                             }
                           }}
@@ -354,7 +361,11 @@ const HomePage = () => {
                           </Button>
                           <Button
                             variant="danger"
-                            onClick={() => handleDelete(redirect.documentId)}
+                            onClick={() => {
+                              if (redirect.documentId) {
+                                handleDelete(redirect.documentId);
+                              }
+                            }}
                             endIcon={<Trash />}
                           >
                             {formatMessage({
