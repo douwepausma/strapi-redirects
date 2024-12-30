@@ -1,14 +1,5 @@
 import type { Core } from '@strapi/types';
-
-interface LifecycleSetting {
-  uid: string;
-  enabled: boolean;
-  field: string;
-}
-
-interface ContentType {
-
-}
+import { ContentType, LifecycleSetting } from '../../../../types/redirectPluginTypes';
 
 export default ({ strapi }: { strapi: Core.Strapi }) => {
   const STORE_KEY = 'lifecycle-settings';

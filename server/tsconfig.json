@@ -1,6 +1,6 @@
 {
   "extends": "@strapi/typescript-utils/tsconfigs/server",
-  "include": ["./src", "src/helpers"],
+  "include": ["./src", "src/helpers", "../types/redirectPluginTypes.ts"],
   "compilerOptions": {
     "rootDir": "../",
     "baseUrl": "."

@@ -108,9 +108,7 @@ export default factories.createCoreService(
         data: redirectData,
       };
 
-      const result = await strapi
-        .documents('plugin::redirects.redirect')
-        .update(updateParams);
+      const result = await strapi.documents('plugin::redirects.redirect').update(updateParams);
 
       return result;
     },
@@ -168,11 +166,9 @@ export default factories.createCoreService(
           };
 
           let operationResult;
-          const existingRedirects = await strapi
-            .documents('plugin::redirects.redirect')
-            .findMany({
-              filters: { source: row.source },
-            });
+          const existingRedirects = await strapi.documents('plugin::redirects.redirect').findMany({
+            filters: { source: row.source },
+          });
 
           if (existingRedirects.length > 0) {
             const existingRedirect = existingRedirects[0];
