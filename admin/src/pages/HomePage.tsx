@@ -50,7 +50,7 @@ const HomePage = () => {
   const [isFetching, setIsFetching] = useState(false);
   const [redirects, setRedirects] = useState<RedirectType[]>([]);
   const [selectedRedirect, setSelectedRedirect] = useState<RedirectType | null>(null);
-  const [sortBy, setSortBy] = useState<string>('source');
+  const [sortBy, setSortBy] = useState<string>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -94,11 +94,15 @@ const HomePage = () => {
   };
 
   const handleSort = (field: string) => {
-    if (sortBy === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    if (sortBy === field && sortBy !== 'createdAt') {
+      if(sortOrder === 'desc') setSortOrder('asc');
+      else {
+        setSortOrder('desc');
+        setSortBy('createdAt');
+      }
     } else {
       setSortBy(field);
-      setSortOrder('asc');
+      setSortOrder('desc');
     }
     setNewPage(1);
   };
