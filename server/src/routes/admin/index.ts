@@ -4,7 +4,8 @@ export default [
     path: '/content-types',
     handler: 'settingsController.getContentTypes',
     config: {
-      policies: ['admin::isAuthenticatedAdmin'],
+      policies: [],
+      auth: false,
     },
   },
   {
@@ -12,7 +13,8 @@ export default [
     path: '/settings',
     handler: 'settingsController.getSettings',
     config: {
-      policies: ['admin::isAuthenticatedAdmin'],
+      policies: [],
+      auth: false,
     },
   },
   {
@@ -20,7 +22,8 @@ export default [
     path: '/settings',
     handler: 'settingsController.updateSettings',
     config: {
-      policies: ['admin::isAuthenticatedAdmin'],
+      policies: [],
+      auth: false,
     },
   },
   {
@@ -28,7 +31,8 @@ export default [
     path: '/:id',
     handler: 'redirectsController.findOne',
     config: {
-      policies: ['admin::isAuthenticatedAdmin'],
+      policies: [],
+      auth: false,
     },
   },
   {
@@ -36,7 +40,8 @@ export default [
     path: '/',
     handler: 'redirectsController.findAll',
     config: {
-      policies: ['admin::isAuthenticatedAdmin'],
+      policies: [],
+      auth: false,
     },
   },
   {
@@ -44,7 +49,8 @@ export default [
     path: '/',
     handler: 'redirectsController.create',
     config: {
-      policies: ['admin::isAuthenticatedAdmin'],
+      policies: [],
+      auth: false,
     },
   },
   {
@@ -52,7 +58,8 @@ export default [
     path: '/:id',
     handler: 'redirectsController.update',
     config: {
-      policies: ['admin::isAuthenticatedAdmin'],
+      policies: [],
+      auth: false,
     },
   },
   {
@@ -60,7 +67,8 @@ export default [
     path: '/:documentId',
     handler: 'redirectsController.delete',
     config: {
-      policies: ['admin::isAuthenticatedAdmin'],
+      policies: [],
+      auth: false,
     },
   },
   {
@@ -68,7 +76,8 @@ export default [
     path: '/import',
     handler: 'redirectsController.import',
     config: {
-      policies: ['admin::isAuthenticatedAdmin'],
+      policies: [],
+      auth: false,
     },
   },
 ];
